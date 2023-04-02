@@ -14,14 +14,12 @@ async function addData(req, res) {
 }
 
 async function getAll(req, res) {
-  async (req, res) => {
-    try {
-      const data = await Model.find();
-      res.status(200).json(data);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
-  };
+  try {
+    const data = await Model.find();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 }
 async function getOne(req, res) {
   try {
