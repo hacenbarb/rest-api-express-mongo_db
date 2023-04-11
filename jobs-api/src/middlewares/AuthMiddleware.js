@@ -1,6 +1,6 @@
 const User = require("../models/UserModel");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET } = process.env || { JWT_SECRET: "weakjwtsecret" };
 
 async function auth(req, res, next) {
   // CHECK HEADER
