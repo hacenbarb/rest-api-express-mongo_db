@@ -18,7 +18,7 @@ async function register(req, res) {
         user,
       })
     );
-  } catch (err) {
+  } catch (error) {
     res.status(401).json({
       message: "User not successful created",
       error: error.mesage,
