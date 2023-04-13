@@ -20,7 +20,7 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       minlength: [3, "Last name must be at least 3 characters"],
-      maxlength: [45, "Last name must not exceed 45 characters"],
+      maxlength: [45, "Last name must not exceed 45 character"],
     },
     birthDate: {
       type: Date,
