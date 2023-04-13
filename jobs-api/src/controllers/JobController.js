@@ -1,4 +1,3 @@
-const { trusted } = require("mongoose");
 const Job = require("../models/JobModel");
 
 async function getAllJobs(req, res) {
