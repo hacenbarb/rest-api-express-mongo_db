@@ -3,20 +3,46 @@ const Job = require("../models/JobModel");
 async function getAllJobs(req, res) {
   try {
     const userId = req.user._id;
-    const jobs = await Job.find({ createdBy: userId });
-    if (!jobs) {
+    const { position, company, sort } = req.params;
+    const queryObject = {
+      createdBy: userId,
+    };
+    if (position) {
+      queryObject.position = { $regex: position, $options: "i" };
+    }
+    if (company) {
+      queryObject.company = { $regex: `^${company}$`, $options: "i" };
+    }
+    const result = await Job.find(queryObject);
+
+    if (!result) {
       return res
         .status(404)
         .json({ result: false, message: "You don't have jobs yet" });
     }
+
+    // SORTING
+    if (sort) {
+      const sortList = sort.split(",").join(" ");
+      result = await result.sort(sortList);
+    } else {
+      result = await result.sort("-createdAt");
+    }
+
+    // PAGINATION
+    const page = Number(req.params.page) || 1;
+    const limit = Number(req.params.limit) || 10;
+    const skip = (page - 1) * limit;
+    result = await result.skip(skip).limit(limit);
+
     return res.status(200).json({
       result: true,
-      jobs,
+      jobs: result,
     });
   } catch (error) {
     return res.status(500).json({
       result: false,
-      error,
+      error: "internal server error",
     });
   }
 }
@@ -76,7 +102,7 @@ async function updateJob(req, res) {
       });
     }
     const jobObject = { createdBy: userId, _id: jobId };
-    const updateSettings = { new: true, runValidators: true};
+    const updateSettings = { new: true, runValidators: true };
     const updateObject = {};
     if (position) updateObject.position = position;
     if (description) updateObject.description = description;
@@ -109,7 +135,7 @@ async function deleteJob(req, res) {
       createdBy: userId,
       _id: jobId,
     };
-    const deletedJob = await Job.findOneAndDelete(deleteObject);  
+    const deletedJob = await Job.findOneAndDelete(deleteObject);
     if (!deletedJob) {
       return res.status(404).json({ result: false, message: "Job not found" });
     }
